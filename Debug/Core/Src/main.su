@@ -1,0 +1,15 @@
+../Core/Src/main.c:81:6:button_handle	8	static
+../Core/Src/main.c:116:6:led_effect_state_change	8	static
+../Core/Src/main.c:141:6:Effect1	8	static
+../Core/Src/main.c:158:6:Effect2	8	static
+../Core/Src/main.c:171:6:Effect3	8	static
+../Core/Src/main.c:186:5:main	8	static
+../Core/Src/main.c:233:6:SystemClock_Config	72	static
+../Core/Src/main.c:273:13:MX_TIM3_Init	32	static
+../Core/Src/main.c:318:13:MX_TIM4_Init	32	static
+../Core/Src/main.c:363:13:MX_GPIO_Init	40	static
+../Core/Src/main.c:395:6:delay_1ms	4	static
+../Core/Src/main.c:401:6:delay_ms	24	static
+../Core/Src/main.c:408:6:delay_1ms_btn	4	static
+../Core/Src/main.c:414:6:delay_ms_btn	24	static
+../Core/Src/main.c:427:6:Error_Handler	4	static,ignoring_inline_asm
