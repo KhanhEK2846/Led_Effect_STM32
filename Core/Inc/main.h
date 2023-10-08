@@ -57,17 +57,17 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define led_TIM_counter 9
 #define BTN1_Pin GPIO_PIN_0
 #define BTN1_GPIO_Port GPIOB
 #define BTN2_Pin GPIO_PIN_1
 #define BTN2_GPIO_Port GPIOB
-#define Red_Pin GPIO_PIN_3
-#define Red_GPIO_Port GPIOB
-#define Green_Pin GPIO_PIN_4
-#define Green_GPIO_Port GPIOB
-#define Blue_Pin GPIO_PIN_5
-#define Blue_GPIO_Port GPIOB
-
+#define LEDR_Pin GPIO_PIN_3
+#define LEDR_GPIO_Port GPIOB
+#define LEDG_Pin GPIO_PIN_4
+#define LEDG_GPIO_Port GPIOB
+#define LEDB_Pin GPIO_PIN_5
+#define LEDB_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
