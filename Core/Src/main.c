@@ -47,7 +47,6 @@ typedef enum
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim3;
-TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart1;
 
@@ -71,9 +70,6 @@ uint8_t count_led_alt = 0, count_led_seq = 0;
 
 uint16_t divine_time_val = 0; //bien dung de luu gia tri chia deu thoi gian hieu ung led (bam xung - pwm thu cong)
 
-//test_var
-int count = 0;
-
 //---- button handle variable ----
 uint8_t button_current = 1; //trang thai hien tai cua nut bam, khoi tao la 1 de tranh dieu kien ban da
 uint8_t button_last = 1; //trang thai cuoi cua nut bam
@@ -86,6 +82,19 @@ uint32_t time_longpress_keep;
 //---- button handle variable ----
 
 
+uint16_t led_timer_cnt = 0;
+
+//test_var
+int count = 0;
+int temp1,temp2,temp3;
+int test;
+
+//test = 2 press button call back
+//test = 1 short press
+//test = 3 long pressing
+//test = 4 release button call back
+//test =  5 test long press if else
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -93,7 +102,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM3_Init(void);
-static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
 void led_blink_origin(void); //effect 1
 void led_blink_sequence(void); //effect 2
@@ -107,7 +115,6 @@ void button_longpressing_callback_500ms(void); ////button1 > 500ms handle fnct
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int test;
 
 void button_handle(void)
 {
@@ -116,7 +123,7 @@ void button_handle(void)
 	//giai thuat kieu:
 	//1. phat hien thay doi trang thai
 	//2. cu co nhieu, reset time_debounce
-	uint8_t sta = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_1);
+	uint8_t sta = HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_0);
 	//cu co nhieu gan lai button filter
 	if(sta != button_filter) //trang thai doc duoc, khac voi trang thai truoc (button_filter)
 	{
@@ -139,28 +146,31 @@ void button_handle(void)
 		if(button_current == 0) //truong hop dang nhan nut
 		{
 			//nhan xuong lam gi do thi nen viet ham callback - lap trinh nen quen callback - Nhan nut tao ra su kien
-			//button_pressing_callback();
+			button_pressing_callback();
 			is_press_timeout = 1;
 			time_btn_press = HAL_GetTick();
 		} else { //nha nut
 			//nha nut se lam su kien gi day - viet dang callback
 			//tuc la khoang thoi gian ke tu luc nhan cho den luc nha ra < 500ms
-			if(HAL_GetTick() - time_btn_press <= 1000)
+			temp1 = HAL_GetTick();
+			if(HAL_GetTick() - time_btn_press < 500)
 			{
 				test = 1;
 				button_shortpressing_callback_500ms();
+				is_press_timeout = 0;
 			}
 			//button_release_callback();
 		}
 		button_last = button_current; //muc dich neu trang thai nut bam sau khi xac lap khac trang thai truoc thi xu ly callback
 	}
-	if(is_press_timeout == 1 && (HAL_GetTick() - time_btn_press >= 3000))
+	temp2 = HAL_GetTick();
+	if(is_press_timeout == 1 && (HAL_GetTick() - time_btn_press > 500))
 	{
+			//is_press_timeout = 0;
+			test = 5;
+			longpress_timeout = 1;
+			time_longpress_keep = HAL_GetTick();
 			button_longpressing_callback_500ms();
-			is_press_timeout = 0;
-			//longpress_timeout = 1;
-			test++;
-			//time_longpress_keep = HAL_GetTick();
 	}
 	//-------- Xu ly nut nhan --------
 }
@@ -172,6 +182,7 @@ void button_pressing_callback(void)
 	//thu nhan doi hieu ung
 	//count++;
 	//tam thoi do nothing
+	test = 2;
 }
 
 void button_shortpressing_callback_500ms(void)
@@ -188,6 +199,7 @@ void button_longpressing_callback_500ms(void)
 {
 	//sau moi khoang thoi gian 200ms duoc nhan giu
 	//giam chu ky led di dan tuc la "nut duoc nhan va giu hoai luon cu moi 200ms thi -100ms max-cycle
+	temp3 = HAL_GetTick();
 	if(longpress_timeout && (HAL_GetTick() - time_longpress_keep == 200))
 	{
 		test = 3;
@@ -196,13 +208,16 @@ void button_longpressing_callback_500ms(void)
 			max_cycle_led_time = 2000;
 		}
 		max_cycle_led_time -= 100;
+		//is_press_timeout = 0;
 	}
+	longpress_timeout = 0;
 }
 
 void button_release_callback(void)
 {
 	//do nothinng
 	//co the lam gi do nhung chua biet la nen lam gi
+	test = 4;
 }
 
 
@@ -259,9 +274,6 @@ void led_blink_alternate(void)
 	}
 }
 
-
-
-
 /* USER CODE END 0 */
 
 /**
@@ -294,15 +306,10 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
   HAL_TIM_Base_Start_IT(&htim3);
-  HAL_TIM_Base_Start_IT(&htim4);
   /* USER CODE BEGIN 2 */
   //uint8_t btn_state = 0;
   //uint8_t btn2_state = 0;
-  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_3,GPIO_PIN_SET);
-  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4,GPIO_PIN_SET);
-  //HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5,GPIO_PIN_SET);
 
   /* USER CODE END 2 */
 
@@ -410,51 +417,6 @@ static void MX_TIM3_Init(void)
 }
 
 /**
-  * @brief TIM4 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_TIM4_Init(void)
-{
-
-  /* USER CODE BEGIN TIM4_Init 0 */
-
-  /* USER CODE END TIM4_Init 0 */
-
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-  TIM_MasterConfigTypeDef sMasterConfig = {0};
-
-  /* USER CODE BEGIN TIM4_Init 1 */
-
-  /* USER CODE END TIM4_Init 1 */
-  htim4.Instance = TIM4;
-  htim4.Init.Prescaler = 3599;
-  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim4.Init.Period = led_TIM_counter;
-  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM4_Init 2 */
-
-  /* USER CODE END TIM4_Init 2 */
-
-}
-
-/**
   * @brief USART1 Initialization Function
   * @param None
   * @retval None
@@ -522,47 +484,53 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) //!WARNING: Don't change
 {
-	static uint16_t led_timer_cnt = 0;
+
 	if(htim == &htim3) //behavior led function timer
 	{
-		if(max_cycle_led_time > 0)
+		if(led_timer_cnt > max_cycle_led_time)
 		{
+			led_timer_cnt = 0; //reset timer when timer over counter value
+		} //handle for overflow timer case - temporary solution
+		else {
 			led_timer_cnt++;
-			switch(led_eff_state)
+			if(max_cycle_led_time > 0)
 			{
-				case LED_BLINK_ORIGIN:
+				switch(led_eff_state)
 				{
-					divine_time_val = max_cycle_led_time / 2;
-					if(led_timer_cnt == divine_time_val){
-						led_blink_origin();
-						led_timer_cnt = 0;
+					case LED_BLINK_ORIGIN:
+					{
+						divine_time_val = max_cycle_led_time / 2;
+						if(led_timer_cnt == divine_time_val){
+							led_blink_origin();
+							led_timer_cnt = 0;
+						}
+					break;
 					}
-					break;
-				}
-				case LED_BLINK_SEQ:
-				{
-					divine_time_val = max_cycle_led_time / 4;
-					if(led_timer_cnt == divine_time_val){
-						led_blink_sequence();
-						led_timer_cnt = 0;
+					case LED_BLINK_SEQ:
+					{
+						divine_time_val = max_cycle_led_time / 4;
+						if(led_timer_cnt == divine_time_val){
+							led_blink_sequence();
+							led_timer_cnt = 0;
+						}
+						break;
 					}
-					break;
-				}
-				case LED_BLINK_ALTER:
-				{
-					divine_time_val = max_cycle_led_time / 2;
-					if(led_timer_cnt == divine_time_val){
-						led_blink_alternate();
-						led_timer_cnt = 0;
+					case LED_BLINK_ALTER:
+					{
+						divine_time_val = max_cycle_led_time / 2;
+						if(led_timer_cnt == divine_time_val){
+							led_blink_alternate();
+							led_timer_cnt = 0;
+						}
+						break;
 					}
-					break;
+					default:
+						break;
 				}
-				default:
-					break;
+			} else if(max_cycle_led_time == 0)
+			{
+				max_cycle_led_time = 2000; //neu chu ky bi nut bam tuong tac giam ve 0 thi reset lai thoi gian chu ky
 			}
-		} else if(max_cycle_led_time == 0)
-		{
-			max_cycle_led_time = 2000; //neu chu ky bi nut bam tuong tac giam ve 0 thi reset lai thoi gian chu ky
 		}
 	}
 }
