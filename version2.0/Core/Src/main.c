@@ -259,7 +259,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	//----- Phan code test debug UART gui den man hinh OLED ----
+	//----- Phan code test debug UART gui den man hinh OLED (Uncomment 4 lines below to debug) ----
 	//memset(Tx_Buffer,0,sizeof(Tx_Buffer)); //clear buffer before write
 	//sprintf((char*)Tx_Buffer,"\nCYCLE:%u\nMODE:%u",max_cycle_led_time,led_eff_state);
 	//HAL_UART_Transmit(&huart1,Tx_Buffer,sizeof(Tx_Buffer), 10);
