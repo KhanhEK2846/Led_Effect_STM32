@@ -3,6 +3,7 @@
 Dependencies:
 - Button library (Link: https://github.com/tuyethoa1011/STM32_Libs) - version 2.0.
 
+Contact team via email, if you have any concerns: ngltuyethoa1011@gmail.com
 
 <b>BOSCH - Embedded Academy 2023 - Chuyên đề thiết kế hệ thống nhúng 1 - CE437.O11.MTCL</b>
 
