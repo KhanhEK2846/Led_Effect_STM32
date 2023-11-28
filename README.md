@@ -1,7 +1,7 @@
 # Lab1_GPIO_Actuator - LEDs Control Using Buttons STM32F103C8T6
 
 Dependencies:
-- Button library (Link: https://github.com/tuyethoa1011/STM32_Libs) - version 2.0.
+- Button library (Link: https://github.com/tuyethoa1011/STM32_Libs) - version 2.0 written by Hoa.
 
 Contact team via email, if you have any concerns: ngltuyethoa1011@gmail.com
 
